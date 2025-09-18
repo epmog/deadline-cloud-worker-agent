@@ -21,12 +21,13 @@ from deadline_test_fixtures import (
     OperatingSystem,
 )
 
-from e2e.utils import (
+from test.e2e.utils import (
     get_shutdown_on_stop_status_from_toml,
     submit_custom_job,
     submit_sleep_job,
 )
-from e2e.conftest import DeadlineResources
+from test.e2e.conftest import DeadlineResources
+from test.e2e.fixtures.local_worker import LocalWorkerProcess
 
 LOG = logging.getLogger(__name__)
 
@@ -263,3 +264,26 @@ $ErrorActionPreference = 'Stop'
             ),
             assert_fail_msg=f"Session root directory ({session_root_dir}) not applied",
         )
+
+    def test_local_worker_example(
+        self,
+        deadline_resources: DeadlineResources,
+        worker_config: DeadlineWorkerConfiguration,
+        local_worker_factory: Callable[[DeadlineWorkerConfiguration], LocalWorkerProcess],
+    ) -> None:
+        """Example test showing how to use the local worker fixture with a specific fleet."""
+        
+        # Create a local worker using the scaling fleet
+        local_worker = local_worker_factory(
+            config=worker_config,
+            fleet=deadline_resources.scaling_fleet,
+        )
+        
+        # Verify the worker is running
+        assert local_worker.is_running(), "Local worker should be running"
+        
+        # Verify the worker is configured with the correct fleet
+        config_content = local_worker.config_file.read_text()
+        assert f'fleet_id = "{deadline_resources.scaling_fleet.id}"' in config_content
+        
+        # The worker will be automatically cleaned up by the fixture

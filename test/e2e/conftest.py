@@ -23,6 +23,14 @@ from deadline_test_fixtures import (
 )
 import pytest
 
+# Import local worker fixtures
+from .fixtures.local_worker import (
+    local_worker_factory, 
+    local_worker,
+    function_local_worker_factory,
+    function_local_worker,
+)
+
 LOG = logging.getLogger(__name__)
 
 pytest_plugins = ["deadline_test_fixtures.pytest_hooks"]
@@ -383,6 +391,8 @@ def operating_system() -> OperatingSystem:
         return OperatingSystem(name="AL2023")
     elif os_env_var == "windows":
         return OperatingSystem(name="WIN2022")
+    elif os_env_var == "darwin":
+        return OperatingSystem(name="AL2023")
     else:
         assert False, (
             f'Expected OPERATING_SYSTEM env var to be "linux" or "windows", but got {os_env_var}'

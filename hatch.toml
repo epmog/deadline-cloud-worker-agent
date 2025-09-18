@@ -1,36 +1,27 @@
 [envs.default]
 pre-install-commands = [
-  "pip install -r requirements-testing.txt"
+  "pip install -r requirements-testing.txt",
+  "pip install -e .",
 ]
 
 [envs.default.scripts]
-sync = "pip install -r requirements-testing.txt"
+sync = ["pip install -r requirements-testing.txt", "pip install -e ."]
 test = "pytest test/unit --numprocesses=auto {args}"
 # Don't pass --numprocesses here so that tests run sequentially.
 # pytest-xdist does not allow live output of stdout, meaning integ tests only show output after the test is done
 # See: https://pytest-xdist.readthedocs.io/en/stable/known-limitations.html#output-stdout-and-stderr-from-workers
 version = "hatch version"
 metadata = "hatch project metadata {args:}"
-e2e-test= "pytest --no-cov test/e2e {args:}"
+e2e-test = "pytest --no-cov test/e2e {args:}"
+e2e-macos = "pytest --no-cov test/e2e/test_macos_local_worker_job_submission.py {args:}"
 integ-test = "pytest --no-cov test/integ {args:}"
 typing = "mypy {args:src test}"
-style = [
-  "ruff check {args:.}",
-  "ruff format --check {args:.}"
-]
-fmt = [
-  "ruff format",
-  "style",
-]
-lint = [
-  "style",
-  "typing",
-]
+style = ["ruff check {args:.}", "ruff format --check {args:.}"]
+fmt = ["ruff format", "style"]
+lint = ["style", "typing"]
 
 [envs.research]
-pre-install-commands = [
-  "pip install -r requirements-research.txt ."
-]
+pre-install-commands = ["pip install -r requirements-research.txt ."]
 
 [envs.research.scripts]
 sync = "pip install -r requirements-research.txt"
@@ -39,7 +30,7 @@ sync = "pip install -r requirements-research.txt"
 python = ["3.9", "3.10", "3.11"]
 
 [envs.default.env-vars]
-RUN_AS_ADMIN="true"
+RUN_AS_ADMIN = "true"
 
 [envs.release]
 detached = true
